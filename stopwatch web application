@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="stopwatch">
+        <div id="display">00:00:00</div>
+        <button id="start">Start</button>
+        <button id="stop">Stop</button>
+        <button id="reset">Reset</button>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+}
+
+.stopwatch {
+    text-align: center;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#display {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    margin: 5px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+let timer;
+let seconds = 0;
+let isRunning = false;
+
+const display = document.getElementById('display');
+const startButton = document.getElementById('start');
+const stopButton = document.getElementById('stop');
+const resetButton = document.getElementById('reset');
+
+function updateDisplay() {
+    const hrs = Math.floor(seconds / 3600).toString().padStart(2, '0');
+    const mins = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+    const secs = (seconds % 60).toString().padStart(2, '0');
+    display.textContent = ${hrs}:${mins}:${secs};
+}
+
+function startTimer() {
+    if (!isRunning) {
+        isRunning = true;
+        timer = setInterval(() => {
+            seconds++;
+            updateDisplay();
+        }, 1000);
+    }
+}
+
+function stopTimer() {
+    if (isRunning) {
+        clearInterval(timer);
+        isRunning = false;
+    }
+}
+
+function resetTimer() {
+    clearInterval(timer);
+    isRunning = false;
+    seconds = 0;
+    updateDisplay();
+}
+
+startButton.addEventListener('click', startTimer);
+stopButton.addEventListener('click', stopTimer);
+resetButton.addEventListener('click', resetTimer);

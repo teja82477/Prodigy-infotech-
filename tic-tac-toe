@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Tic-Tac-Toe</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>Tic-Tac-Toe</h1>
+        <div id="board" class="board">
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+            <div class="cell" data-cell></div>
+        </div>
+        <h2 class="status-message" id="statusMessage"></h2>
+        <button id="restartButton" class="restart-btn">Restart Game</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.game-container {
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.cell {
+    width: 100px;
+    height: 100px;
+    background-color: #fff;
+    border: 2px solid #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.status-message {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.restart-btn {
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+}
+const X_CLASS = 'x';
+const O_CLASS = 'o';
+const WINNING_COMBINATIONS = [
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
+  [0, 4, 8],
+  [2, 4, 6]
+];
+
+const cellElements = document.querySelectorAll('[data-cell]');
+const board = document.getElementById('board');
+const statusMessage = document.getElementById('statusMessage');
+const restartButton = document.getElementById('restartButton');
+let oTurn;
+
+startGame();
+
+restartButton.addEventListener('click', startGame);
+
+function startGame() {
+  oTurn = false;
+  cellElements.forEach(cell => {
+    cell.classList.remove(X_CLASS);
+    cell.classList.remove(O_CLASS);
+    cell.removeEventListener('click', handleClick);
+    cell.addEventListener('click', handleClick, { once: true });
+  });
+  setBoardHoverClass();
+  statusMessage.innerText = "Player X's turn";
+}
+
+function handleClick(e) {
+  const cell = e.target;
+  const currentClass = oTurn ? O_CLASS : X_CLASS;
+  placeMark(cell, currentClass);
+  if (checkWin(currentClass)) {
+    endGame(false);
+  } else if (isDraw()) {
+    endGame(true);
+  } else {
+    swapTurns();
+    setBoardHoverClass();
+    statusMessage.innerText = Player ${oTurn ? 'O' : 'X'}'s turn;
+  }
+}
+
+function endGame(draw) {
+  if (draw) {
+    statusMessage.innerText = "It's a Draw!";
+  } else {
+    statusMessage.innerText = Player ${oTurn ? 'O' : 'X'} Wins!;
+  }
+}
+
+function isDraw() {
+  return [...cellElements].every(cell => {
+    return cell.classList.contains(X_CLASS) || cell.classList.contains(O_CLASS);
+  });
+}
+
+function placeMark(cell, currentClass) {
+  cell.classList.add(currentClass);
+}
+
+function swapTurns() {
+  oTurn = !oTurn;
+}
+
+function setBoardHoverClass() {
+  board.classList.remove(X_CLASS);
+  board.classList.remove(O_CLASS);
+  if (oTurn) {
+    board.classList.add(O_CLASS);
+  } else {
+    board.classList.add(X_CLASS);
+  }
+}
+
+function checkWin(currentClass) {
+  return WINNING_COMBINATIONS.some(combination => {
+    return combination.every(index => {
+      return cellElements[index].classList.contains(currentClass);
+    });
+  });
+}
